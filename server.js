@@ -19,7 +19,7 @@ const db = knex({
 
 const app = express();
 
-const whitelist = ["http://localhost:3000"];
+const whitelist = ["http://localhost:3001"];
 const corsOptions = {
   origin: function (origin, callback) {
     if (whitelist.indexOf(origin) !== -1) {
@@ -37,6 +37,9 @@ app.use(bodyParser.json());
 app.post("/signin", signin.signinAuthentication(db, bcrypt));
 app.post("/register", (req, res) => {
   register.handleRegister(req, res, db, bcrypt);
+});
+app.get("/", (req, res) => {
+  res.send({ status: 200 });
 });
 app.get("/profile/:id", auth.requireAuth, (req, res) => {
   profile.handleProfileGet(req, res, db);
