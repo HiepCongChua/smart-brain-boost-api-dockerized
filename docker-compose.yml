@@ -1,42 +1,53 @@
-version: '3'
-services:
-
-  # PostgreSQL
-  postgres:
-    container_name: postgres
-    build: ./postgres
+version:  '3'
+services: 
+  # Backedn API 1
+  smart-brain-api_1:
+    container_name: backend-api
+    build: ./
     environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: password
-      POSTGRES_URL: postgres://admin:password@localhost:5432/smart-brain
-      POSTGRES_DB: smart-brain
+      POSTGRGES_URI: postgres://hieple:secret@postgres:5432/smart-brain-docker
+      REDIS_URI: redis://redis:6379
+    ports: 
+      - "3000:3000"
+    volumes: 
+      - ./:/usr/src/app
+    # Backedn API 2
+  smart-brain-api_2:
+    container_name: backend-api
+    build: ./
+    environment:
+    POSTGRGES_URI: postgres://hieple:secret@postgres:5432/smart-brain-docker
+    REDIS_URI: redis://redis:6379
+    ports: 
+      - "3001:3000"
+    volumes: 
+      - ./:/usr/src/app
+    
+    
+  # Postgres
+  postgres:
+    container_name: postgres_db
+    environment: 
+      POSTGRES_USER: hieple
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: smart-brain-docker
       POSTGRES_HOST: postgres
-    ports:
+    build: ./postgres
+    ports: 
       - "5432:5432"
-
+  
   # Redis
   redis:
-    container_name: redis
+    container_name: redis_db
     image: redis
-    ports:
+    ports: 
       - "6379:6379"
+  #Load_balance
+  nginx:
+    image: nginx
+    ports: 
+      - 80:80
+    
 
-  # Backend
-  smart-brain-api:
-    # env_file:
-    #   - ./.private/api-keys.env "Another way to insert env variables"
-    container_name: backend
-    build: ./
-    volumes:
-      - ./:/usr/src/smart-brain-api
-    command: npm start
-    working_dir: /usr/src/smart-brain-api
-    ports:
-      - "3000:3000"
-    environment:
-      POSTGRES_URI: postgres://admin:password@postgres:5432/smart-brain
-      REDIS_URI: redis://redis:6379
-    # Heads up! Docker has updated this feature and now you don't need to define the links property in order for things to work - https://docs.docker.com/compose/networking/
-    # links:
-    #   - postgres
-    #   - redis
+
+      

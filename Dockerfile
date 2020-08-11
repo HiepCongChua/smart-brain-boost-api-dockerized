@@ -1,18 +1,6 @@
-FROM node:8.11.1
-
-# Create app directory
-RUN mkdir -p /usr/src/smart-brain-api
-WORKDIR /usr/src/smart-brain-api
-
-# Install app dependencies
-COPY package.json /usr/src/smart-brain-api
+FROM node:carbon
+WORKDIR /usr/src/app
+COPY package.json /usr/src/app
 RUN npm install
-
-# Bundle app source
-COPY . /usr/src/smart-brain-api
-
-# Build arguments
-ARG NODE_VERSION=8.11.1
-
-# Environment
-ENV NODE_VERSION $NODE_VERSION
+COPY . /usr/src/app
+CMD [ "npm","start" ]
